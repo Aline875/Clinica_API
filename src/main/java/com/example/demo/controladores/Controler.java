@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.ProprietarioPetResponseDTO;
 import com.example.demo.entidades.ProprietarioPet;
 
+import com.example.demo.dto.PetResponseDTO;
+import com.example.demo.entidades.Pet;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,8 +38,9 @@ public class Controler {
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} else {
 			response.getMensagem().add("ProprietarioPet validado");
-			response.proprietariopet = dados;
+			response.proprietarioPet = dados;
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 	}
 }
+

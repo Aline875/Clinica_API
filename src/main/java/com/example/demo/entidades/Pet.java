@@ -18,8 +18,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 @Entity
-@Table(name="proprietariopet")
-public class ProprietarioPet {
+@Table(name="pet")
+public class Pet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", nullable = true)

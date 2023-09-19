@@ -16,7 +16,7 @@ public class SwaggerConfig {
 	private static final String API_TITLE = "Swagger API";
 	private static final String API_DESCRIPTION = "Via Varejo";
 	private static final String API_BASE_PACKAGE = "br.com.arq";
-
+	
 	private ApiInfo getApiInfo() {
 		return new ApiInfo(API_TITLE, API_DESCRIPTION, "V3", "", AUTHOR_MAIL, "", "");
 	}

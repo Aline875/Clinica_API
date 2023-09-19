@@ -18,38 +18,38 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.ListaProprietarioPetResponseDTO;
-import com.example.demo.dto.ProprietarioPetResponseDTO;
-import com.example.demo.entidades.ProprietarioPet;
-import com.example.demo.repositorios.RepositorioProprietarioPet;
+import com.example.demo.dto.ListaPetResponseDTO;
+import com.example.demo.dto.PetResponseDTO;
+import com.example.demo.entidades.Pet;
+import com.example.demo.repositorios.RepositorioPet;
 
 import io.swagger.annotations.Api;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("proprietariopet")
-@Api(value="API REST ProprietarioPet")
-public class ControladorProprietarioPet {
+@RequestMapping("pet")
+@Api(value="API REST Pet")
+public class ControladorPet {
 	@Autowired
-	private RepositorioProprietarioPet repositorioProprietarioPet;
+	private RepositorioPet repositorioPet;
 
 	@GetMapping("/listar")
-	public ResponseEntity<ListaProprietarioPetResponseDTO> listar() {
-		ListaProprietarioPetResponseDTO response = new ListaProprietarioPetResponseDTO();
+	public ResponseEntity<ListaPetResponseDTO> listar() {
+		ListaPetResponseDTO response = new ListaPetResponseDTO();
 		response.setStatusCode("200");
-		List<ProprietarioPet> lista = (List<ProprietarioPet>) repositorioProprietarioPet.findAll();
+		List<Pet> lista = (List<Pet>) repositorioPet.findAll();
 		response.quantidadeTotal = lista.size();
 		if(lista.size() == 0) {
 			response.getMensagem().add("Consulta sem Resultados");
 		} else {
-			response.proprietariopet = lista; 
+			response.pet = lista; 
 		}
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/cadastrar")
-	public ResponseEntity<ProprietarioPetResponseDTO> cadastrar(@Valid @RequestBody ProprietarioPet dados, BindingResult bindingResult) {
-		ProprietarioPetResponseDTO response = new ProprietarioPetResponseDTO();
+	public ResponseEntity<PetResponseDTO> cadastrar(@Valid @RequestBody Pet dados, BindingResult bindingResult) {
+		PetResponseDTO response = new PetResponseDTO();
 		response.setStatusCode("200");
 		if (bindingResult.hasErrors()) {
 			response.setStatusCode("199");
@@ -59,38 +59,38 @@ public class ControladorProprietarioPet {
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} else {
 			try {
-				dados = repositorioProprietarioPet.save(dados);
-				response.proprietarioPet = dados;
-				response.getMensagem().add("ProprietarioPet cadastrado com sucesso");
+				dados = repositorioPet.save(dados);
+				response.Pet = dados;
+				response.getMensagem().add("Pet cadastrado com sucesso");
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			} catch (DataIntegrityViolationException e) {
-				response.proprietarioPet = dados;
+				response.Pet = dados;
 				response.getMensagem().add(e.getLocalizedMessage());
 				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 			}
 		}
 	}
 
-	@GetMapping("/getProprietarioPet/{id}")
-	public ResponseEntity<ProprietarioPetResponseDTO> getProprietarioPet(@PathVariable Long id) {
-		ProprietarioPetResponseDTO response = new ProprietarioPetResponseDTO();
+	@GetMapping("/getPet/{id}")
+	public ResponseEntity<PetResponseDTO> getPet(@PathVariable Long id) {
+		PetResponseDTO response = new PetResponseDTO();
 		response.setStatusCode("200");
-		Optional<ProprietarioPet> buscarProprietarioPet = repositorioProprietarioPet.findById(id);
-		if (buscarProprietarioPet.isPresent() == false) {
+		Optional<Pet> buscarPet = repositorioPet.findById(id);
+		if (buscarPet.isPresent() == false) {
 			response.setStatusCode("199");
-			response.getMensagem().add("ProprietarioPet não encontrado");
+			response.getMensagem().add("Pet não encontrado");
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} else {
-			response.getMensagem().add("ProprietarioPet encontrado");
-			response.proprietarioPet = buscarProprietarioPet.get();
+			response.getMensagem().add("Pet encontrado");
+			response.Pet = buscarPet.get();
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 	}
 
 	@PutMapping("/atualizar/{id}")
-	public ResponseEntity<ProprietarioPetResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ProprietarioPet dados,
+	public ResponseEntity<PetResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody Pet dados,
 			BindingResult bindingResult) {
-		ProprietarioPetResponseDTO response = new ProprietarioPetResponseDTO();
+		PetResponseDTO response = new PetResponseDTO();
 		response.setStatusCode("200");
 		if (bindingResult.hasErrors()) {
 			response.setStatusCode("199");
@@ -99,32 +99,32 @@ public class ControladorProprietarioPet {
 			}
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} else {
-			Optional<ProprietarioPet> buscarProprietarioPet = repositorioProprietarioPet.findById(id);
-			if (buscarProprietarioPet.isPresent() == false) {
+			Optional<Pet> buscarPet = repositorioPet.findById(id);
+			if (buscarPet.isPresent() == false) {
 				response.setStatusCode("199");
-				response.getMensagem().add("ProprietarioPet não encontrado");
+				response.getMensagem().add("Pet não encontrado");
 				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 			} else {
 				response.getMensagem().add("Professor atualizado");
-				dados.id = buscarProprietarioPet.get().id;
-				response.proprietarioPet = repositorioProprietarioPet.save(dados);
+				dados.id = buscarPet.get().id;
+				response.Pet = repositorioPet.save(dados);
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
 		}
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<ProprietarioPetResponseDTO> delete(@PathVariable Long id) {
-		ProprietarioPetResponseDTO response = new ProprietarioPetResponseDTO();
+	public ResponseEntity<PetResponseDTO> delete(@PathVariable Long id) {
+		PetResponseDTO response = new PetResponseDTO();
 		response.setStatusCode("200");
-		Optional<ProprietarioPet> buscarProprietarioPet = repositorioProprietarioPet.findById(id);
-		if (buscarProprietarioPet.isPresent() == false) {
+		Optional<Pet> buscarPet = repositorioPet.findById(id);
+		if (buscarPet.isPresent() == false) {
 			response.setStatusCode("199");
-			response.getMensagem().add("ProprietarioPet não encontrado");
+			response.getMensagem().add("Pet não encontrado");
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} else {
-			response.getMensagem().add("ProprietarioPet removido");
-			repositorioProprietarioPet.deleteById(id);
+			response.getMensagem().add("Pet removido");
+			repositorioPet.deleteById(id);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 	}

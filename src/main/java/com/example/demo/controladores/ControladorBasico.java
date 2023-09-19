@@ -16,7 +16,7 @@ import com.example.demo.repositorios.RepositorioProprietarioPet;
 public class ControladorBasico {
 	@Autowired
 	private RepositorioProprietarioPet repositorioProprietarioPet;
-
+	
 	@GetMapping("/getAll")
 	public String getAll() {
 		return "Primeira API - Chamou o método getAll";
