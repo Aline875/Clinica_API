@@ -49,27 +49,30 @@ public class ControladorPet {
 
 	@PostMapping("/cadastrar")
 	public ResponseEntity<PetResponseDTO> cadastrar(@Valid @RequestBody Pet dados, BindingResult bindingResult) {
-		PetResponseDTO response = new PetResponseDTO();
-		response.setStatusCode("200");
-		if (bindingResult.hasErrors()) {
-			response.setStatusCode("199");
-			for (ObjectError obj : bindingResult.getAllErrors()) {
-				response.getMensagem().add(obj.getDefaultMessage());
+			PetResponseDTO response = new PetResponseDTO();
+			response.setStatusCode("200");
+	
+			if (bindingResult.hasErrors()) {
+					response.setStatusCode("199");
+					for (ObjectError obj : bindingResult.getAllErrors()) {
+							response.getMensagem().add(obj.getDefaultMessage());
+					}
+					return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			} else {
+					try {
+							dados = repositorioPet.save(dados);
+							response.Pet = dados;
+							response.getMensagem().add("Pet cadastrado com sucesso");
+							return new ResponseEntity<>(response, HttpStatus.OK);
+					} catch (DataIntegrityViolationException e) {
+							response.Pet = dados;
+							response.getMensagem().add(e.getLocalizedMessage());
+							return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+					}
 			}
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-		} else {
-			try {
-				dados = repositorioPet.save(dados);
-				response.Pet = dados;
-				response.getMensagem().add("Pet cadastrado com sucesso");
-				return new ResponseEntity<>(response, HttpStatus.OK);
-			} catch (DataIntegrityViolationException e) {
-				response.Pet = dados;
-				response.getMensagem().add(e.getLocalizedMessage());
-				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-			}
-		}
 	}
+	
+	
 
 	@GetMapping("/getPet/{id}")
 	public ResponseEntity<PetResponseDTO> getPet(@PathVariable Long id) {
@@ -105,7 +108,7 @@ public class ControladorPet {
 				response.getMensagem().add("Pet não encontrado");
 				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 			} else {
-				response.getMensagem().add("Professor atualizado");
+				response.getMensagem().add("Pet atualizado");
 				dados.id = buscarPet.get().id;
 				response.Pet = repositorioPet.save(dados);
 				return new ResponseEntity<>(response, HttpStatus.OK);

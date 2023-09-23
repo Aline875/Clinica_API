@@ -40,8 +40,12 @@ public class Veterinario {
     @Column(name = "data_nascimento", nullable = false)
     private Date dataNascimento;
 
-    @OneToMany(mappedBy = "veterinarioResponsavel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pet> petsAtendidos = new ArrayList<>();
+    @OneToMany(mappedBy = "veterinario")
+    private List<Pet> pets = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa;
 
     // Construtores, getters e setters
 

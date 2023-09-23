@@ -6,7 +6,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.boot.context.config.ConfigData;
 
 @Entity
 @Table(name = "consultas")
@@ -25,10 +29,12 @@ public class Consultas {
     @Column(name = "descricao", columnDefinition = "VARCHAR(255)", nullable = false)
     private String descricao;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "proprietario_id", nullable = false)
-    private ProprietarioPet proprietarioPet;
 
+    @ManyToOne
+    @JoinColumn(name = "pet_id")
+    private Pet pet;
+
+ 
     // Construtores, getters e setters
 
     public Long getId() {
@@ -53,14 +59,6 @@ public class Consultas {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public ProprietarioPet getProprietarioPet() {
-        return proprietarioPet;
-    }
-
-    public void setProprietarioPet(ProprietarioPet proprietarioPet) {
-        this.proprietarioPet = proprietarioPet;
     }
 
     @Override

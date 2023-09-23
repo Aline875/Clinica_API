@@ -1,6 +1,12 @@
 package com.example.demo.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.validation.ObjectError;
+
+import com.example.demo.entidades.Pet;
 
 public class ConsultaDTO {
     private Long id;
@@ -44,5 +50,28 @@ public class ConsultaDTO {
 
     public void setPetId(Long petId) {
         this.petId = petId;
+    }
+
+    public void setStatusCode(String string) {
+    }
+
+    public List<ObjectError> getMensagem() {
+      return null;
+    }
+
+    public void setMensagem(ArrayList arrayList) {
+    }
+
+    public void setMensagem(String string) {
+    }
+
+    public void setMensagem(List<String> mensagensDeErro) {
+    }
+
+    public void setPet(Pet petNaoEncontrado) {
+    }
+
+    public boolean isPresent() {
+      return false;
     }
 }

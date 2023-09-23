@@ -1,14 +1,19 @@
 package com.example.demo.entidades;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.google.gson.Gson;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -17,7 +22,7 @@ import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "proprietariopet")
-public class ProprietarioPet {
+public class ProprietarioPet<ConsultaProprietario> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = true)
@@ -39,12 +44,16 @@ public class ProprietarioPet {
     @Pattern(regexp = "^[0-9]+$", message = "O CPF só deve conter números")
     @Column(name = "cpf", columnDefinition = "VARCHAR(11)", unique = true, nullable = false)
     private String cpf;
-
     @NotBlank(message = "O RG não pode estar nulo ou em branco")
     @Length(min = 6, max = 11, message = "O RG deve conter entre 6 e 10 números")
     @Pattern(regexp = "^[0-9]+$", message = "O RG só deve conter números")
     @Column(name = "rg", columnDefinition = "VARCHAR(10)", nullable = false)
     private String rg;
+
+    @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL)
+    private List<Pet> pets;
+
+    
 
     // Construtores, getters e setters
 

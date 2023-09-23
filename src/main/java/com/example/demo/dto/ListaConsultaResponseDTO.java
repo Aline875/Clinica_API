@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ListaConsultaResponseDTO extends BasicDTO {
     private int quantidadeTotal;
-    private List<Consultas> consultas;
+    private List<ConsultaDTO> consultas;
 
     public ListaConsultaResponseDTO() {
         // Construtor padrão
@@ -20,11 +20,19 @@ public class ListaConsultaResponseDTO extends BasicDTO {
         this.quantidadeTotal = quantidadeTotal;
     }
 
-    public List<Consultas> getConsultas() {
+    public List<ConsultaDTO> getConsultas() {
         return consultas;
     }
 
-    public void setConsultas(List<Consultas> consultas) {
-        this.consultas = consultas;
+    public void setConsultas(List<ConsultaDTO> lista) {
+        this.consultas = lista;
+    }
+
+    public int size() {
+      return 0;
+    }
+
+    public boolean isEmpty() {
+      return false;
     }
 }

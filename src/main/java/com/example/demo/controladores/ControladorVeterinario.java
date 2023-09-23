@@ -24,14 +24,14 @@ public class ControladorVeterinario {
         return new ResponseEntity<>(veterinarios, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscar")
     public ResponseEntity<Veterinario> buscarVeterinarioPorId(@PathVariable Long id) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         return veterinarioOptional.map(veterinario -> new ResponseEntity<>(veterinario, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping
+    @PostMapping("/cadastrar")
     public ResponseEntity<Veterinario> cadastrarVeterinario(@RequestBody VeterinarioDTO veterinarioDTO) {
         Veterinario veterinario = new Veterinario();
         BeanUtils.copyProperties(veterinarioDTO, veterinario);
@@ -39,7 +39,7 @@ public class ControladorVeterinario {
         return new ResponseEntity<>(veterinarioSalvo, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/atualizar")
     public ResponseEntity<Veterinario> atualizarVeterinario(@PathVariable Long id, @RequestBody VeterinarioDTO veterinarioDTO) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         if (veterinarioOptional.isPresent()) {
@@ -52,7 +52,7 @@ public class ControladorVeterinario {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletar")
     public ResponseEntity<String> deletarVeterinario(@PathVariable Long id) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         if (veterinarioOptional.isPresent()) {

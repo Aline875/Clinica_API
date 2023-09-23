@@ -105,7 +105,7 @@ public class ControladorProprietarioPet {
 				response.getMensagem().add("ProprietarioPet não encontrado");
 				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 			} else {
-				response.getMensagem().add("Professor atualizado");
+				response.getMensagem().add("ProprietarioPet atualizado");
 				dados.id = buscarProprietarioPet.get().id;
 				response.proprietarioPet = repositorioProprietarioPet.save(dados);
 				return new ResponseEntity<>(response, HttpStatus.OK);
