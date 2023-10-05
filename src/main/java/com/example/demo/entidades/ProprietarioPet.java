@@ -1,6 +1,5 @@
 package com.example.demo.entidades;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
@@ -101,4 +100,8 @@ public class ProprietarioPet<ConsultaProprietario> {
     public String toString() {
         return new Gson().toJson(this);
     }
+
+    @OneToMany(mappedBy = "proprietario")
+    private List<Consulta> consultas;
+
 }

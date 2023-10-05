@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/veterinarios")
+@RequestMapping("/veterinario")
 public class ControladorVeterinario {
     @Autowired
     private VeterinarioRepository veterinarioRepository;
 
-    @GetMapping
+    @GetMapping("/listar")
     public ResponseEntity<List<Veterinario>> listarVeterinarios() {
         List<Veterinario> veterinarios = veterinarioRepository.findAll();
         return new ResponseEntity<>(veterinarios, HttpStatus.OK);
     }
 
-    @GetMapping("/buscar")
+    @GetMapping("/{id}")
     public ResponseEntity<Veterinario> buscarVeterinarioPorId(@PathVariable Long id) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         return veterinarioOptional.map(veterinario -> new ResponseEntity<>(veterinario, HttpStatus.OK))
@@ -39,7 +39,7 @@ public class ControladorVeterinario {
         return new ResponseEntity<>(veterinarioSalvo, HttpStatus.CREATED);
     }
 
-    @PutMapping("/atualizar")
+    @PutMapping("/atualizar/{id}")
     public ResponseEntity<Veterinario> atualizarVeterinario(@PathVariable Long id, @RequestBody VeterinarioDTO veterinarioDTO) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         if (veterinarioOptional.isPresent()) {
@@ -52,7 +52,7 @@ public class ControladorVeterinario {
         }
     }
 
-    @DeleteMapping("/deletar")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deletarVeterinario(@PathVariable Long id) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         if (veterinarioOptional.isPresent()) {
@@ -62,7 +62,7 @@ public class ControladorVeterinario {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Veterinário não encontrado");
         }
     }
-    
-    }
+}
+
     
 

@@ -1,15 +1,12 @@
 package com.example.demo.entidades;
 
 import java.util.ArrayList;
-import java.util.List; // Importe a classe java.util.List corretamente
+import java.util.List; 
 
 import org.hibernate.validator.constraints.Length;
 
 import com.google.gson.Gson;
 
-
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +24,7 @@ import jakarta.validation.constraints.Pattern;
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = true)
+    @Column(name = "ID", nullable = false)
     public Long id;
 
     @Column(name = "nome", columnDefinition = "VARCHAR(80)", nullable = false)
@@ -42,7 +39,7 @@ public class Pet {
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "A raça só deve conter letras")
     private String raca;
 
-    @Column(name = "historico_do_pet", columnDefinition = "VARCHAR(255)", nullable = true)
+    @Column(name = "historico_do_pet", columnDefinition = "VARCHAR(255)", nullable = false)
     @Length(max = 255, message = "O histórico do pet deve conter no máximo 255 caracteres")
     private String historicoDoPet;
     
@@ -53,15 +50,6 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "veterinario_id")
     private Veterinario veterinario;
-
-    @ManyToOne
-    @JoinColumn(name = "funcionario_id") // Nome da coluna na tabela do banco de dados
-    private Funcionario funcionario;
-
-
-    @OneToMany(mappedBy = "pet")
-    private List<Consultas> consultas = new ArrayList<>();
-  
 
 
     // Getters e Setters para todas as propriedades, incluindo nome e raça
@@ -96,4 +84,6 @@ public class Pet {
     public String toString() {
         return new Gson().toJson(this);
     }
+
+
 }

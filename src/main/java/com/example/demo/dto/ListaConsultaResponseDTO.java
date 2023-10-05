@@ -1,15 +1,16 @@
 package com.example.demo.dto;
 
-import com.example.demo.entidades.Consultas;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import com.example.demo.entidades.Consulta;
 
 public class ListaConsultaResponseDTO extends BasicDTO {
     private int quantidadeTotal;
-    private List<ConsultaDTO> consultas;
+    private List<Consulta> consultas;
 
     public ListaConsultaResponseDTO() {
-        // Construtor padrão
+        super.setMensagem(new ArrayList<>());
     }
 
     public int getQuantidadeTotal() {
@@ -20,19 +21,11 @@ public class ListaConsultaResponseDTO extends BasicDTO {
         this.quantidadeTotal = quantidadeTotal;
     }
 
-    public List<ConsultaDTO> getConsultas() {
+    public List<Consulta> getConsultas() {
         return consultas;
     }
 
-    public void setConsultas(List<ConsultaDTO> lista) {
-        this.consultas = lista;
-    }
-
-    public int size() {
-      return 0;
-    }
-
-    public boolean isEmpty() {
-      return false;
+    public void setConsultas(List<Consulta> consultas) {
+        this.consultas = consultas;
     }
 }

@@ -24,4 +24,8 @@ public class ListaEmpresaResponseDTO {
     return null;
   }
 
+  public Object getEmpresas() {
+    return null;
+  }
+
 }

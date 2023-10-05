@@ -1,83 +1,147 @@
 package com.example.demo.controladores;
 
-import com.example.demo.dto.EmpresaDTO;
-import com.example.demo.servicos.EmpresaServico;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.demo.dto.EmpresaDTO;
+import com.example.demo.entidades.Empresa;
+import com.example.demo.repositorios.RepositorioEmpresa;
+
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/empresa")
 public class ControladorEmpresa {
+
     @Autowired
-    private EmpresaServico empresaServico;
+    private RepositorioEmpresa repositorioEmpresa;
 
     @GetMapping("/listar")
-    public ResponseEntity<?> listar() {
-        return ResponseEntity.ok(empresaServico.listarEmpresas());
+    public ResponseEntity<List<EmpresaDTO>> listarEmpresas() {
+        List<Empresa> empresas = repositorioEmpresa.findAll();
+        List<EmpresaDTO> empresaDTOs = empresas.stream()
+                .map(this::mapearEmpresaParaDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(empresaDTOs, HttpStatus.OK);
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<?> cadastrar(@Valid @RequestBody EmpresaDTO dados, BindingResult bindingResult) {
+    public ResponseEntity<EmpresaDTO> cadastrar(@Valid @RequestBody EmpresaDTO dados, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(obterMensagensErro(bindingResult));
+            return criarRespostaDeErro(HttpStatus.BAD_REQUEST, extrairMensagensDeErro(bindingResult));
         }
 
         try {
-            EmpresaDTO empresaCriada = empresaServico.criarEmpresa(dados);
-            return ResponseEntity.status(HttpStatus.CREATED).body(empresaCriada);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Empresa novaEmpresa = mapearDTOParaEmpresa(dados);
+            novaEmpresa = repositorioEmpresa.save(novaEmpresa);
+
+            return criarRespostaDeSucesso(mapearEmpresaParaDTO(novaEmpresa), HttpStatus.CREATED, "Empresa cadastrada com sucesso");
+        } catch (DataIntegrityViolationException e) {
+            return criarRespostaDeErro(HttpStatus.BAD_REQUEST, List.of(e.getLocalizedMessage()));
         }
     }
 
     @GetMapping("/getEmpresa/{id}")
-    public ResponseEntity<?> getEmpresa(@PathVariable Long id) {
-        EmpresaDTO empresaDTO = empresaServico.obterEmpresaPorId(id);
-        if (empresaDTO == null || empresaDTO.getEmpresa() == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<EmpresaDTO> getEmpresa(@PathVariable Long id) {
+        Optional<Empresa> empresaOptional = repositorioEmpresa.findById(id);
+
+        if (empresaOptional.isPresent()) {
+            return criarRespostaDeSucesso(mapearEmpresaParaDTO(empresaOptional.get()), HttpStatus.OK, "Empresa encontrada");
         } else {
-            return ResponseEntity.ok(empresaDTO);
+            return criarRespostaDeErro(HttpStatus.NOT_FOUND, List.of("Empresa não encontrada"));
         }
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @Valid @RequestBody EmpresaDTO dados, BindingResult bindingResult) {
+    public ResponseEntity<EmpresaDTO> atualizarEmpresa(@PathVariable Long id, @Valid @RequestBody EmpresaDTO dados, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(obterMensagensErro(bindingResult));
+            return criarRespostaDeErro(HttpStatus.BAD_REQUEST, extrairMensagensDeErro(bindingResult));
         }
 
         try {
-            EmpresaDTO empresaAtualizada = empresaServico.atualizarEmpresa(id, dados);
-            if (empresaAtualizada == null) {
-                return ResponseEntity.notFound().build();
+            Optional<Empresa> empresaOptional = repositorioEmpresa.findById(id);
+
+            if (empresaOptional.isPresent()) {
+                Empresa empresaExistente = empresaOptional.get();
+                atualizarDadosEmpresaExistente(empresaExistente, dados);
+                empresaExistente = repositorioEmpresa.save(empresaExistente);
+
+                return criarRespostaDeSucesso(mapearEmpresaParaDTO(empresaExistente), HttpStatus.OK, "Empresa atualizada com sucesso");
+            } else {
+                return criarRespostaDeErro(HttpStatus.NOT_FOUND, List.of("Empresa não encontrada"));
             }
-            return ResponseEntity.ok(empresaAtualizada);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            return criarRespostaDeErro(HttpStatus.BAD_REQUEST, List.of(e.getLocalizedMessage()));
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        boolean sucesso = empresaServico.excluirEmpresa(id);
-        if (sucesso) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<EmpresaDTO> excluirEmpresa(@PathVariable Long id) {
+        try {
+            Optional<Empresa> empresaOptional = repositorioEmpresa.findById(id);
+
+            if (empresaOptional.isPresent()) {
+                repositorioEmpresa.deleteById(id);
+                return criarRespostaDeSucesso(mapearEmpresaParaDTO(empresaOptional.get()), HttpStatus.OK, "Empresa excluída com sucesso");
+            } else {
+                return criarRespostaDeErro(HttpStatus.NOT_FOUND, List.of("Empresa não encontrada"));
+            }
+        } catch (Exception e) {
+            return criarRespostaDeErro(HttpStatus.BAD_REQUEST, List.of("Erro ao excluir empresa"));
         }
     }
 
-    private String obterMensagensErro(BindingResult bindingResult) {
-        StringBuilder mensagens = new StringBuilder();
-        for (ObjectError obj : bindingResult.getAllErrors()) {
-            mensagens.append(obj.getDefaultMessage()).append("\n");
-        }
-        return mensagens.toString();
+    private ResponseEntity<EmpresaDTO> criarRespostaDeErro(HttpStatus status, List<String> mensagens) {
+        EmpresaDTO response = new EmpresaDTO();
+        response.setStatusCode(status.toString());
+        response.getMensagem().addAll(mensagens);
+        return new ResponseEntity<>(response, status);
+    }
+
+    private ResponseEntity<EmpresaDTO> criarRespostaDeSucesso(EmpresaDTO empresaDTO, HttpStatus status, String mensagem) {
+        empresaDTO.setStatusCode(status.toString());
+        empresaDTO.getMensagem().add(mensagem);
+        return new ResponseEntity<>(empresaDTO, status);
+    }
+
+    private List<String> extrairMensagensDeErro(BindingResult bindingResult) {
+        return bindingResult.getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .collect(Collectors.toList());
+    }
+
+    private Empresa mapearDTOParaEmpresa(EmpresaDTO empresaDTO) {
+        Empresa empresa = new Empresa();
+        empresa.setNome(empresaDTO.getNome());
+        empresa.setCnpj(empresaDTO.getCnpj());
+        empresa.setTelefone(empresaDTO.getTelefone());
+        empresa.setEndereco(empresaDTO.getEndereco());
+        return empresa;
+    }
+
+    private EmpresaDTO mapearEmpresaParaDTO(Empresa empresa) {
+        EmpresaDTO empresaDTO = new EmpresaDTO();
+        empresaDTO.setId(empresa.getId());
+        empresaDTO.setNome(empresa.getNome());
+        empresaDTO.setCnpj(empresa.getCnpj());
+        empresaDTO.setTelefone(empresa.getTelefone());
+        empresaDTO.setEndereco(empresa.getEndereco());
+        return empresaDTO;
+    }
+
+    private void atualizarDadosEmpresaExistente(Empresa empresaExistente, EmpresaDTO empresaDTO) {
+        empresaExistente.setNome(empresaDTO.getNome());
+        empresaExistente.setCnpj(empresaDTO.getCnpj());
+        empresaExistente.setTelefone(empresaDTO.getTelefone());
+        empresaExistente.setEndereco(empresaDTO.getEndereco());
     }
 }

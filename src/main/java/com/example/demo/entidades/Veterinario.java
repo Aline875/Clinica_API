@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,10 +17,12 @@ import java.util.List;
 public class Veterinario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_veterinario", nullable = true)
-    private Long idVeterinario;
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @NotBlank(message = "O nome não pode estar nulo ou em branco")
+    @Length(min = 3, max = 80, message = "O nome deve conter entre 3 e 80 caracteres")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "O nome só deve conter letras e espaços")
     @Column(name = "nome", columnDefinition = "VARCHAR(80)", nullable = false)
     private String nome;
 
@@ -49,12 +52,12 @@ public class Veterinario {
 
     // Construtores, getters e setters
 
-    public Long getIdVeterinario() {
-        return idVeterinario;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdVeterinario(Long idVeterinario) {
-        this.idVeterinario = idVeterinario;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -101,4 +104,8 @@ public class Veterinario {
     public String toString() {
         return new Gson().toJson(this);
     }
+
+    @OneToMany(mappedBy = "veterinario")
+    private List<Consulta> consultas = new ArrayList<>();
+
 }

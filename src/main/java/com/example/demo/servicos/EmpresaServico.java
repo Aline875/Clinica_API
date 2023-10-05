@@ -1,16 +1,17 @@
 package com.example.demo.servicos;
 
-import com.example.demo.dto.EmpresaDTO;
-import com.example.demo.entidades.Empresa;
-import com.example.demo.repositorios.RepositorioEmpresa;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.EmpresaDTO;
+import com.example.demo.entidades.Empresa;
+import com.example.demo.repositorios.RepositorioEmpresa;
+
+import jakarta.validation.Valid;
 
 @Service
 public class EmpresaServico {
@@ -34,26 +35,23 @@ public class EmpresaServico {
     public EmpresaDTO criarEmpresa(EmpresaDTO empresaDTO) {
         Empresa novaEmpresa = mapearDTOParaEmpresa(empresaDTO);
         novaEmpresa = repositorioEmpresa.save(novaEmpresa);
-        return mapearEmpresaParaDTO(novaEmpresa);
+        empresaDTO.setEmpresa(novaEmpresa); // Defina a empresa no DTO
+        empresaDTO.setStatusCode("200");
+        empresaDTO.getMensagem().add("Empresa cadastrada com sucesso");
+        return empresaDTO;
     }
 
-    public ListaEmpresaResponseDTO listarEmpresas() {
+    public List<EmpresaDTO> listarEmpresas() {
         List<Empresa> todasAsEmpresas = repositorioEmpresa.findAll();
         List<EmpresaDTO> empresaDTOs = todasAsEmpresas.stream()
                 .map(this::mapearEmpresaParaDTO)
                 .collect(Collectors.toList());
 
-        ListaEmpresaResponseDTO responseDTO = new ListaEmpresaResponseDTO();
-        responseDTO.setEmpresas(empresaDTOs);
-        return responseDTO;
+        return empresaDTOs;
     }
 
-    public boolean excluirEmpresa(Long empresaId) {
-        if (repositorioEmpresa.existsById(empresaId)) {
-            repositorioEmpresa.deleteById(empresaId);
-            return true;
-        }
-        return false;
+    public void excluirEmpresa(Long empresaId) {
+        repositorioEmpresa.deleteById(empresaId);
     }
 
     public EmpresaDTO atualizarEmpresa(Long empresaId, @Valid EmpresaDTO empresaDTO) {
@@ -71,6 +69,8 @@ public class EmpresaServico {
         Empresa empresa = new Empresa();
         empresa.setNome(empresaDTO.getNome());
         empresa.setCnpj(empresaDTO.getCnpj());
+        empresa.setTelefone(empresaDTO.getTelefone());
+        empresa.setEndereco(empresaDTO.getEndereco());
         // Mapear outros campos
         return empresa;
     }
@@ -80,6 +80,8 @@ public class EmpresaServico {
         empresaDTO.setId(empresa.getId());
         empresaDTO.setNome(empresa.getNome());
         empresaDTO.setCnpj(empresa.getCnpj());
+        empresaDTO.setTelefone(empresa.getTelefone());
+        empresaDTO.setEndereco(empresa.getEndereco());
         // Mapear outros campos
         return empresaDTO;
     }
@@ -87,6 +89,8 @@ public class EmpresaServico {
     private void atualizarDadosEmpresaExistente(Empresa empresaExistente, EmpresaDTO empresaDTO) {
         empresaExistente.setNome(empresaDTO.getNome());
         empresaExistente.setCnpj(empresaDTO.getCnpj());
+        empresaExistente.setTelefone(empresaDTO.getTelefone());
+        empresaExistente.setEndereco(empresaDTO.getEndereco());
         // Atualizar outros campos conforme necessário
     }
 }

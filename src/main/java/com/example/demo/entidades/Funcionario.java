@@ -2,61 +2,60 @@ package com.example.demo.entidades;
 
 import com.google.gson.Gson;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.util.Date;
-import java.util.List;
-
 @Entity
-@Table(name = "funcionarios")
+@Table(name = "funcionario")
 public class Funcionario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_funcionario", nullable = true)
-    private Long idFuncionario;
+    @Column(name = "id", nullable = true)
+    private Long id;
 
-    @NotBlank(message = "O nome não pode estar nulo ou em branco")
-    @Size(min = 3, max = 80, message = "O Nome deve conter entre 3 e 80 caracteres")
+    @NotBlank(message = "O nome não pode estar em branco")
+    @Size(max = 80, message = "O Nome deve conter no máximo 80 caracteres")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "O nome só deve conter letras")
     @Column(name = "nome", columnDefinition = "VARCHAR(80)", nullable = false)
     private String nome;
 
-    @NotBlank(message = "O CPF não pode estar nulo ou em branco")
-    @Size(min = 11, max = 11, message = "O CPF deve conter 11 números")
-    @Pattern(regexp = "^[0-9]+$", message = "O CPF só deve conter números")
+ 
+
+    @NotBlank(message = "O CPF não pode estar em branco")
     @Column(name = "cpf", columnDefinition = "VARCHAR(11)", unique = true, nullable = false)
     private String cpf;
 
-    @NotBlank(message = "O cargo não pode estar nulo ou em branco")
-    @Column(name = "cargo", columnDefinition = "VARCHAR(255)", nullable = false)
+    @NotBlank(message = "O cargo não pode estar em branco")
+    @Size(max = 100, message = "O cargo deve conter no máximo 100 caracteres")
+    @Column(name = "cargo", columnDefinition = "VARCHAR(100)", nullable = false)
     private String cargo;
 
-    @NotNull(message = "A data de nascimento não pode estar nula")
-    @Temporal(TemporalType.DATE)
-    @Column(name = "data_nascimento", nullable = false)
-    private Date dataNascimento;
-
-    @Column(name = "telefone", columnDefinition = "VARCHAR(20)")
+    @NotBlank(message = "O telefone não pode estar em branco")
+    @Size(max = 15, message = "O telefone deve conter no máximo 15 caracteres")
+    @Column(name = "telefone", columnDefinition = "VARCHAR(15)", nullable = false)
     private String telefone;
 
-    @Column(name = "endereco", columnDefinition = "VARCHAR(255)")
+    @NotBlank(message = "O endereço não pode estar em branco")
+    @Size(max = 200, message = "O endereço deve conter no máximo 200 caracteres")
+    @Column(name = "endereco", columnDefinition = "VARCHAR(200)", nullable = false)
     private String endereco;
-
-    @OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL)
-    private List<Pet> pets;
 
     // Construtores, getters e setters
 
-    public Long getIdFuncionario() {
-        return idFuncionario;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdFuncionario(Long idFuncionario) {
-        this.idFuncionario = idFuncionario;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -66,6 +65,7 @@ public class Funcionario {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
 
     public String getCpf() {
         return cpf;
@@ -83,13 +83,6 @@ public class Funcionario {
         this.cargo = cargo;
     }
 
-    public Date getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(Date dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
 
     public String getTelefone() {
         return telefone;

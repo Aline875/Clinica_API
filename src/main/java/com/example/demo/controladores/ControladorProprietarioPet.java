@@ -59,6 +59,11 @@ public class ControladorProprietarioPet {
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} else {
 			try {
+				if (repositorioProprietarioPet.findByCpf(dados.getCpf()).size() > 0) {
+					response.getMensagem().add("O CPF informado já está cadastrado");
+					return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	
+				}
 				dados = repositorioProprietarioPet.save(dados);
 				response.proprietarioPet = dados;
 				response.getMensagem().add("ProprietarioPet cadastrado com sucesso");

@@ -1,13 +1,24 @@
 package com.example.demo.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.demo.entidades.Empresa;
+
 public class EmpresaDTO {
     private Long id;
     private String nome;
     private String cnpj;
-    private String empresa; // Supondo que empresa seja uma string
-    private String mensagem; // Supondo que mensagem seja uma string
+    private String telefone;
+    private String endereco;
+    private String statusCode;
+    private List<String> mensagem;
 
-    // Getters e setters para os atributos
+    public EmpresaDTO() {
+        mensagem = new ArrayList<>();
+    }
+
+    // Getters e setters para todos os atributos
 
     public Long getId() {
         return id;
@@ -33,19 +44,48 @@ public class EmpresaDTO {
         this.cnpj = cnpj;
     }
 
-    public String getEmpresa() {
-        return empresa;
+    public String getTelefone() {
+        return telefone;
     }
 
-    public void setEmpresa(String empresa) {
-        this.empresa = empresa;
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
-    public String getMensagem() {
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public List<String> getMensagem() {
         return mensagem;
     }
 
-    public void setMensagem(String mensagem) {
+    public void setMensagem(List<String> mensagem) {
         this.mensagem = mensagem;
     }
+
+    public boolean isPresent() {
+        return false;
+    }
+
+    public void setEmpresa(Empresa empresaAtualizada) {
+    }
+
+    public EmpresaDTO get() {
+      return null;
+    }
+
+    // Outros getters e setters
 }
