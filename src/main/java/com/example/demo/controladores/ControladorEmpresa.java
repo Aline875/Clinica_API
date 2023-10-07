@@ -35,12 +35,18 @@ public class ControladorEmpresa {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<EmpresaDTO> cadastrar(@Valid @RequestBody EmpresaDTO dados, BindingResult bindingResult) {
+    public ResponseEntity<EmpresaDTO> cadastrarEmpresa(@Valid @RequestBody EmpresaDTO dados, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return criarRespostaDeErro(HttpStatus.BAD_REQUEST, extrairMensagensDeErro(bindingResult));
         }
 
         try {
+            // Verificar se o CNPJ já está cadastrado
+            Optional<Empresa> existingEmpresa = repositorioEmpresa.findByCnpj(dados.getCnpj());
+            if (existingEmpresa.isPresent()) {
+                return criarRespostaDeErro(HttpStatus.BAD_REQUEST, List.of("O CNPJ informado já está cadastrado."));
+            }
+
             Empresa novaEmpresa = mapearDTOParaEmpresa(dados);
             novaEmpresa = repositorioEmpresa.save(novaEmpresa);
 

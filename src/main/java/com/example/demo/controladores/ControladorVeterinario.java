@@ -32,7 +32,13 @@ public class ControladorVeterinario {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<Veterinario> cadastrarVeterinario(@RequestBody VeterinarioDTO veterinarioDTO) {
+    public ResponseEntity<Object> cadastrarVeterinario(@RequestBody VeterinarioDTO veterinarioDTO) {
+        // Verificar se o CRMV já está cadastrado
+        Optional<Veterinario> existingVeterinario = veterinarioRepository.findByCrmv(veterinarioDTO.getCrmv());
+        if (existingVeterinario.isPresent()) {
+            return ResponseEntity.badRequest().body("O CRMV informado já está cadastrado.");
+        }
+
         Veterinario veterinario = new Veterinario();
         BeanUtils.copyProperties(veterinarioDTO, veterinario);
         Veterinario veterinarioSalvo = veterinarioRepository.save(veterinario);
@@ -40,26 +46,32 @@ public class ControladorVeterinario {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<Veterinario> atualizarVeterinario(@PathVariable Long id, @RequestBody VeterinarioDTO veterinarioDTO) {
+    public ResponseEntity<Object> atualizarVeterinario(@PathVariable Long id, @RequestBody VeterinarioDTO veterinarioDTO) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         if (veterinarioOptional.isPresent()) {
+            // Verificar se o CRMV já está cadastrado em outro registro
+            Optional<Veterinario> existingVeterinario = veterinarioRepository.findByCrmvAndIdNot(veterinarioDTO.getCrmv(), id);
+            if (existingVeterinario.isPresent()) {
+                return ResponseEntity.badRequest().body("O CRMV informado já está cadastrado em outro veterinário.");
+            }
+
             Veterinario veterinario = veterinarioOptional.get();
             BeanUtils.copyProperties(veterinarioDTO, veterinario);
             Veterinario veterinarioAtualizado = veterinarioRepository.save(veterinario);
             return new ResponseEntity<>(veterinarioAtualizado, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deletarVeterinario(@PathVariable Long id) {
+    public ResponseEntity<Object> deletarVeterinario(@PathVariable Long id) {
         Optional<Veterinario> veterinarioOptional = veterinarioRepository.findById(id);
         if (veterinarioOptional.isPresent()) {
             veterinarioRepository.deleteById(id);
-            return ResponseEntity.ok("Deletado com sucesso");
+            return ResponseEntity.ok("Veterinário deletado com sucesso.");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Veterinário não encontrado");
+            return ResponseEntity.notFound().build();
         }
     }
 }

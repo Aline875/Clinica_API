@@ -28,7 +28,7 @@ public class ProprietarioPet<ConsultaProprietario> {
     public Long id;
 
     @Min(value = 0, message = "A matricula deverá ser maior que zero")
-    @Max(value = 1000000, message = "A matricula deverá ser menor que 1000000")
+    @Max(value = 100, message = "A matricula deverá ser menor que 1000000")
     @Column(name = "matricula", columnDefinition = "int", nullable = false)
     private int matricula;
 

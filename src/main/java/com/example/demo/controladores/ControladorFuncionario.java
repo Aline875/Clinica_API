@@ -24,7 +24,7 @@ public class ControladorFuncionario {
     private RepositorioFuncionario repositorioFuncionario;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<FuncionarioResponseDTO> cadastrar(@Valid @RequestBody Funcionario dados, BindingResult bindingResult) {
+    public ResponseEntity<FuncionarioResponseDTO> cadastrarFuncionario(@Valid @RequestBody Funcionario dados, BindingResult bindingResult) {
         FuncionarioResponseDTO response = new FuncionarioResponseDTO();
         response.setStatusCode("200");
 
@@ -36,6 +36,14 @@ public class ControladorFuncionario {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } else {
             try {
+                // Verificar se o CPF já está cadastrado
+                Optional<Funcionario> existingFuncionario = repositorioFuncionario.findByCpf(dados.getCpf());
+                if (existingFuncionario.isPresent()) {
+                    response.setStatusCode("199");
+                    response.getMensagem().add("O CPF informado já está cadastrado.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
                 dados = repositorioFuncionario.save(dados);
                 response.setFuncionario(dados);
                 response.getMensagem().add("Funcionário cadastrado com sucesso");
@@ -144,5 +152,6 @@ public class ControladorFuncionario {
         return new ResponseEntity<>(funcionarios, HttpStatus.OK);
     }
 
-    // Adicione outros endpoints conforme necessário
+    // ... (outros métodos)
+
 }

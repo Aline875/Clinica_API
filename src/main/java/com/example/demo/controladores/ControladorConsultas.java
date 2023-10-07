@@ -43,6 +43,16 @@ public class ControladorConsultas {
     public ResponseEntity<ConsultaResponseDTO> cadastrar(@Valid @RequestBody Consulta dados, BindingResult bindingResult) {
         ConsultaResponseDTO response = new ConsultaResponseDTO();
         response.setStatusCode("200");
+
+        // Verifique se a consulta com o mesmo ID já existe
+        Optional<Consulta> consultaExistente = consultaService.getConsultaPorId(dados.getId());
+
+        if (consultaExistente.isPresent()) {
+            response.setStatusCode("199");
+            response.getMensagem().add("ID de consulta já cadastrado");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
         if (bindingResult.hasErrors()) {
             response.setStatusCode("199");
             for (ObjectError obj : bindingResult.getAllErrors()) {
