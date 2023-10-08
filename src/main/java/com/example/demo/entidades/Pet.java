@@ -1,8 +1,5 @@
 package com.example.demo.entidades;
 
-import java.util.ArrayList;
-import java.util.List; 
-
 import org.hibernate.validator.constraints.Length;
 
 import com.google.gson.Gson;
@@ -14,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -42,7 +38,12 @@ public class Pet {
     @Column(name = "historico_do_pet", columnDefinition = "VARCHAR(255)", nullable = false)
     @Length(max = 255, message = "O histórico do pet deve conter no máximo 255 caracteres")
     private String historicoDoPet;
-    
+
+    @Column(name = "sexo", columnDefinition = "VARCHAR(10)", nullable = false)
+    @NotBlank(message = "O sexo não pode estar nulo ou em branco")
+    @Pattern(regexp = "^(M|F)$", message = "O sexo deve ser 'M' para masculino ou 'F' para feminino")
+    private String sexo;
+
     @ManyToOne
     @JoinColumn(name = "proprietario_id")
     private ProprietarioPet proprietario;
@@ -51,8 +52,7 @@ public class Pet {
     @JoinColumn(name = "veterinario_id")
     private Veterinario veterinario;
 
-
-    // Getters e Setters para todas as propriedades, incluindo nome e raça
+    // Getters e Setters para todas as propriedades.
 
     public Long getId() {
         return id;
@@ -78,12 +78,26 @@ public class Pet {
         this.raca = raca;
     }
 
+    public String getHistoricoDoPet() {
+        return historicoDoPet;
+    }
+
+    public void setHistoricoDoPet(String historicoDoPet) {
+        this.historicoDoPet = historicoDoPet;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
     // Outros getters e setters
 
     @Override
     public String toString() {
         return new Gson().toJson(this);
     }
-
-
 }

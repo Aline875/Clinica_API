@@ -28,7 +28,7 @@ public class ProprietarioPet<ConsultaProprietario> {
     public Long id;
 
     @Min(value = 0, message = "A matricula deverá ser maior que zero")
-    @Max(value = 100, message = "A matricula deverá ser menor que 1000000")
+    @Max(value = 1000000, message = "A matricula deverá ser menor que 1000000")
     @Column(name = "matricula", columnDefinition = "int", nullable = false)
     private int matricula;
 
@@ -46,8 +46,12 @@ public class ProprietarioPet<ConsultaProprietario> {
     @NotBlank(message = "O RG não pode estar nulo ou em branco")
     @Length(min = 6, max = 11, message = "O RG deve conter entre 6 e 10 números")
     @Pattern(regexp = "^[0-9]+$", message = "O RG só deve conter números")
-    @Column(name = "rg", columnDefinition = "VARCHAR(10)", nullable = false)
+    @Column(name = "rg", columnDefinition = "VARCHAR(10)",unique = true, nullable = false)
     private String rg;
+    @Column(name = "telefone", columnDefinition = "VARCHAR(15)")
+    private String telefone;
+    @Column(name = "email", columnDefinition = "VARCHAR(100)")
+    private String email;
 
     @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL)
     private List<Pet> pets;

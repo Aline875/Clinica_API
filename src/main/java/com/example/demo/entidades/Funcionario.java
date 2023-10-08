@@ -18,7 +18,7 @@ public class Funcionario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = true)
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
     @NotBlank(message = "O nome não pode estar em branco")
@@ -26,8 +26,6 @@ public class Funcionario {
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "O nome só deve conter letras")
     @Column(name = "nome", columnDefinition = "VARCHAR(80)", nullable = false)
     private String nome;
-
- 
 
     @NotBlank(message = "O CPF não pode estar em branco")
     @Column(name = "cpf", columnDefinition = "VARCHAR(11)", unique = true, nullable = false)
@@ -66,7 +64,6 @@ public class Funcionario {
         this.nome = nome;
     }
 
-
     public String getCpf() {
         return cpf;
     }
@@ -82,7 +79,6 @@ public class Funcionario {
     public void setCargo(String cargo) {
         this.cargo = cargo;
     }
-
 
     public String getTelefone() {
         return telefone;
